@@ -5,11 +5,13 @@ This directory contains scripts to automatically apply all configurations to a n
 ## Quick Start
 
 ### Option 1: One-liner (Recommended for fresh Mac)
+
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/vasudevdm/config/main/quick-setup.sh)
 ```
 
 This will:
+
 - Clone the repository
 - Apply all configurations
 - Install all tools and dependencies
@@ -17,17 +19,20 @@ This will:
 ### Option 2: Manual Setup
 
 #### Step 1: Clone the repository
+
 ```bash
 git clone https://github.com/vasudevdm/config.git ~/Projects/config
 cd ~/Projects/config
 ```
 
 #### Step 2: Make script executable
+
 ```bash
 chmod +x setup.sh
 ```
 
 #### Step 3: Run setup
+
 ```bash
 # Just apply configs (requires repo already cloned)
 ./setup.sh
@@ -45,7 +50,9 @@ chmod +x setup.sh
 ## Scripts
 
 ### `setup.sh`
+
 Main setup script that handles:
+
 - ✅ Cloning the repository (optional)
 - ✅ Creating necessary directories
 - ✅ Copying all config files to home directory
@@ -57,56 +64,127 @@ Main setup script that handles:
 **Note:** Configuration files are copied (not symlinked) so they work independently from the repository. Backups are created for existing files.
 
 **Usage:**
+
 ```bash
 ./setup.sh [--clone] [--tools] [--all] [--help]
 ```
 
 **Options:**
+
 - `--clone`: Clone the repository first
 - `--tools`: Install Homebrew and essential tools
-- `--all`: Do everything (clone + symlink + install tools)
+- `--all`: Do everything (clone + copy + install tools)
 - `--help`: Show help message
 
+### `unsetup.sh`
+
+Removes all configurations installed by setup.sh and restores backups if they exist.
+
+**Usage:**
+
+```bash
+./unsetup.sh              # Interactive (asks for confirmation)
+./unsetup.sh --force      # Skip confirmation prompts
+```
+
+**What it does:**
+
+- ✅ Removes all copied config files
+- ✅ Restores backups if they exist
+- ✅ Cleans up empty directories
+- ✅ Keeps untracked files (safe to run)
+
 ### `quick-setup.sh`
+
 One-liner script that automatically:
+
 - Clones the repository
 - Installs tools
 - Applies all configurations
 
 Perfect for setting up a brand new Mac in one command.
 
+## Running Setup Multiple Times
+
+### What happens if I run `./setup.sh` again?
+
+Since configuration files are **copied** (not symlinked):
+
+- ✅ Files will be **overwritten** with the latest versions from the repo
+- ✅ Backups are created for existing files before overwriting
+- ✅ Old backups are preserved with timestamps: `filename.bak.TIMESTAMP`
+- ✅ It's completely safe to run multiple times
+
+### Example backup files created:
+
+```
+~/.zshrc
+~/.zshrc.bak.1703515200
+~/.zshrc.bak.1703515100
+~/.zshrc.bak.1703515000
+```
+
+### To restore a specific backup:
+
+```bash
+cp ~/.zshrc.bak.1703515200 ~/.zshrc
+```
+
+## Uninstalling
+
+To remove all installed configurations and restore backups:
+
+```bash
+./unsetup.sh
+```
+
+Or skip confirmation:
+
+```bash
+./unsetup.sh --force
+```
+
 ## What Gets Set Up
 
 ### Zsh Configuration
+
 - `~/.zshrc` - Main zsh entry point
 - `~/.zprofile` - Shell initialization
 - `~/.zsh/` - Modular zsh config files (aliases, env, plugins, etc.)
 
 ### Vim Configuration
+
 - `~/.vimrc` - Vim settings and keybindings
 
 ### Tmux Configuration
+
 - `~/.tmux.conf` - Tmux settings with Catppuccin theme
 
 ### Git Configuration
+
 - `~/.gitconfig` - Git user and core settings
 
 ### NPM Configuration
+
 - `~/.npmrc` - NPM registry settings
 
 ### Shell Configuration
+
 - `~/.bashrc` - Bash configuration
 - `~/.profile` - Shell profile
 
 ### Starship Prompt
+
 - `~/.config/starship.toml` - Starship theme and modules
 
 ### SSH Configuration
+
 - `~/.ssh/config` - SSH client configuration for GitHub
 
 ## Installed Tools
 
 The `--tools` flag installs:
+
 - **Homebrew** - macOS package manager
 - **Git** - Version control
 - **Vim** - Text editor
@@ -130,16 +208,19 @@ The `--tools` flag installs:
 After running the setup script:
 
 1. **Start new shell:**
+
    ```bash
    exec zsh
    ```
 
 2. **Set zsh as default shell:**
+
    ```bash
    chsh -s /bin/zsh
    ```
 
 3. **Reload Tmux plugins** (if installed):
+
    ```bash
    tmux
    # Then press: Ctrl-b + I
@@ -154,21 +235,27 @@ After running the setup script:
 ## Troubleshooting
 
 ### Permission Denied
+
 ```bash
 chmod +x setup.sh
 ```
 
 ### Git SSH Authentication Failed
+
 Make sure your SSH keys are set up. The script assumes you have an ED25519 key at `~/.ssh/id_ed25519`.
 
 ### Zsh Not Working
+
 Make sure Oh My Zsh is installed:
+
 ```bash
 ./setup.sh --tools
 ```
 
 ### Tmux Plugins Not Loading
+
 Install TPM and reinstall plugins:
+
 ```bash
 tmux
 # Press: Ctrl-b + I
@@ -177,6 +264,7 @@ tmux
 ## Customization
 
 Edit the configuration files in this repository to customize your setup:
+
 - `zsh/` - Shell configuration
 - `vim/vimrc` - Vim settings
 - `tmux/tmux.conf` - Tmux settings
@@ -184,6 +272,7 @@ Edit the configuration files in this repository to customize your setup:
 - etc.
 
 Then push your changes to your fork:
+
 ```bash
 git add .
 git commit -m "Update configurations"
