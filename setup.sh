@@ -56,7 +56,7 @@ show_help() {
     grep "^#" "$0" | head -20 | sed 's/^# //'
 }
 
-symlink_file() {
+copy_file() {
     local source="$1"
     local target="$2"
     local name="$3"
@@ -66,18 +66,22 @@ symlink_file() {
         return 1
     fi
     
-    # Remove existing file/symlink
-    if [ -L "$target" ] || [ -f "$target" ]; then
-        rm -f "$target"
-        print_info "Removed existing: $target"
+    # Create target directory if it doesn't exist
+    mkdir -p "$(dirname "$target")"
+    
+    # Backup existing file
+    if [ -f "$target" ]; then
+        local backup="${target}.bak.$(date +%s)"
+        mv "$target" "$backup"
+        print_info "Backed up existing: $target → $backup"
     fi
     
-    # Create symlink
-    ln -s "$source" "$target"
-    print_success "Symlinked: $name"
+    # Copy file
+    cp "$source" "$target"
+    print_success "Copied: $name"
 }
 
-symlink_dir_contents() {
+copy_dir_contents() {
     local source_dir="$1"
     local target_dir="$2"
     local pattern="$3"
@@ -94,12 +98,15 @@ symlink_dir_contents() {
             local filename=$(basename "$file")
             local target="$target_dir/$filename"
             
-            if [ -L "$target" ] || [ -f "$target" ]; then
-                rm -f "$target"
+            # Backup existing file
+            if [ -f "$target" ]; then
+                local backup="${target}.bak.$(date +%s)"
+                mv "$target" "$backup"
+                print_info "Backed up existing: $filename → $backup"
             fi
             
-            ln -s "$file" "$target"
-            print_success "Symlinked: $filename"
+            cp "$file" "$target"
+            print_success "Copied: $filename"
         fi
     done
 }
@@ -137,9 +144,9 @@ setup_directories() {
 setup_zsh() {
     print_header "SETTING UP ZSH CONFIGURATION"
     
-    symlink_file "$CONFIG_REPO/zsh/zshrc" ~/.zshrc "zshrc"
-    symlink_file "$CONFIG_REPO/zsh/zprofile" ~/.zprofile "zprofile"
-    symlink_dir_contents "$CONFIG_REPO/zsh" ~/.zsh "*.zsh"
+    copy_file "$CONFIG_REPO/zsh/zshrc" ~/.zshrc "zshrc"
+    copy_file "$CONFIG_REPO/zsh/zprofile" ~/.zprofile "zprofile"
+    copy_dir_contents "$CONFIG_REPO/zsh" ~/.zsh "*.zsh"
     
     print_success "ZSH configured"
 }
@@ -147,7 +154,7 @@ setup_zsh() {
 setup_vim() {
     print_header "SETTING UP VIM CONFIGURATION"
     
-    symlink_file "$CONFIG_REPO/vim/vimrc" ~/.vimrc "vimrc"
+    copy_file "$CONFIG_REPO/vim/vimrc" ~/.vimrc "vimrc"
     
     print_success "Vim configured"
 }
@@ -155,7 +162,7 @@ setup_vim() {
 setup_tmux() {
     print_header "SETTING UP TMUX CONFIGURATION"
     
-    symlink_file "$CONFIG_REPO/tmux/tmux.conf" ~/.tmux.conf "tmux.conf"
+    copy_file "$CONFIG_REPO/tmux/tmux.conf" ~/.tmux.conf "tmux.conf"
     
     print_info "Note: TPM (Tmux Plugin Manager) plugins will be installed on first tmux launch"
     print_info "       Run: tmux && prefix + I (Ctrl-b + I)"
@@ -165,7 +172,7 @@ setup_tmux() {
 setup_git() {
     print_header "SETTING UP GIT CONFIGURATION"
     
-    symlink_file "$CONFIG_REPO/git/gitconfig" ~/.gitconfig "gitconfig"
+    copy_file "$CONFIG_REPO/git/gitconfig" ~/.gitconfig "gitconfig"
     
     print_success "Git configured"
 }
@@ -173,8 +180,8 @@ setup_git() {
 setup_shell() {
     print_header "SETTING UP SHELL CONFIGURATION"
     
-    symlink_file "$CONFIG_REPO/shell/bashrc" ~/.bashrc "bashrc"
-    symlink_file "$CONFIG_REPO/shell/profile" ~/.profile "profile"
+    copy_file "$CONFIG_REPO/shell/bashrc" ~/.bashrc "bashrc"
+    copy_file "$CONFIG_REPO/shell/profile" ~/.profile "profile"
     
     print_success "Shell configured"
 }
@@ -182,7 +189,7 @@ setup_shell() {
 setup_npm() {
     print_header "SETTING UP NPM CONFIGURATION"
     
-    symlink_file "$CONFIG_REPO/npm/npmrc" ~/.npmrc "npmrc"
+    copy_file "$CONFIG_REPO/npm/npmrc" ~/.npmrc "npmrc"
     
     print_success "NPM configured"
 }
@@ -190,7 +197,7 @@ setup_npm() {
 setup_starship() {
     print_header "SETTING UP STARSHIP PROMPT"
     
-    symlink_file "$CONFIG_REPO/starship/starship.toml" ~/.config/starship.toml "starship.toml"
+    copy_file "$CONFIG_REPO/starship/starship.toml" ~/.config/starship.toml "starship.toml"
     
     print_success "Starship configured"
 }
@@ -198,7 +205,8 @@ setup_starship() {
 setup_ssh() {
     print_header "SETTING UP SSH CONFIGURATION"
     
-    symlink_file "$CONFIG_REPO/.ssh/config" ~/.ssh/config "ssh/config"
+    copy_file "$CONFIG_REPO/.ssh/config" ~/.ssh/config "ssh/config"
+    chmod 600 ~/.ssh/config
     
     # Fix SSH key permissions
     if [ -f ~/.ssh/id_ed25519 ]; then
@@ -322,6 +330,10 @@ post_setup_info() {
    - Use 'aliasls' to list all available aliases
    - Use 'aliasrm' to remove aliases
    - Modify ~/.zsh/tools.zsh to add custom env variables
+
+ℹ️  Note: Configuration files are copied to your home directory.
+   If you want to keep them in sync with the repository, pull updates manually:
+   cd ~/Projects/config && git pull
 
 EOF
 }

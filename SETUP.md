@@ -48,11 +48,13 @@ chmod +x setup.sh
 Main setup script that handles:
 - ✅ Cloning the repository (optional)
 - ✅ Creating necessary directories
-- ✅ Symlinking all config files
+- ✅ Copying all config files to home directory
 - ✅ Installing Homebrew
 - ✅ Installing essential tools (git, vim, tmux, zsh, fzf, bat, eza, zoxide, starship, node, nvm, docker)
 - ✅ Installing Oh My Zsh
 - ✅ Installing Tmux Plugin Manager
+
+**Note:** Configuration files are copied (not symlinked) so they work independently from the repository. Backups are created for existing files.
 
 **Usage:**
 ```bash
