@@ -1,0 +1,11 @@
+# ======================================
+# ZSH ENTRY POINT
+# ======================================
+
+# Oh My Zsh location
+export ZSH="$HOME/.oh-my-zsh"
+
+# Load modular config
+for file in ~/.zsh/*.zsh; do
+  [[ -r "$file" ]] && source "$file"
+done

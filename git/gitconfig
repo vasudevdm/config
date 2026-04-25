@@ -1,0 +1,7 @@
+[user]
+	name = Vasudev D M
+	email = Vasudev.DM@netapp.com
+[init]
+	defaultBranch = main
+[core]
+	editor = code --wait

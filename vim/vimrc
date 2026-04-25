@@ -1,0 +1,92 @@
+" Basic macOS Vim Configuration
+" ============================
+
+" Essential settings
+syntax on                  " Enable syntax highlighting
+filetype plugin indent on  " Enable file type detection and indentation
+set encoding=utf-8         " Use UTF-8 encoding
+set fileformats=unix,mac,dos " Prefer Unix line endings
+
+" UI Enhancements
+set number                 " Show line numbers
+set ruler                  " Show cursor position
+set showcmd                " Show partial commands
+set laststatus=2           " Always show status line
+set background=dark        " Use colors suitable for dark background
+set wildmenu               " Enhanced command-line completion
+set showmatch              " Briefly jump to matching bracket
+set title                  " Show file title in terminal window
+set visualbell             " Use visual bell instead of beeping
+
+" Search settings
+set hlsearch               " Highlight search results
+set incsearch              " Incremental search
+set ignorecase             " Ignore case in search patterns
+set smartcase              " Override ignorecase when search has uppercase
+
+" Indentation settings
+set tabstop=4              " Width of tab character
+set softtabstop=4          " Fine-tune amount of whitespace
+set shiftwidth=4           " Indentation amount for commands
+set expandtab              " Use spaces instead of tabs
+set autoindent             " Copy indent from current line
+set smartindent            " Smart autoindenting for C-like programs
+
+" Text rendering
+set linebreak              " Wrap on word boundaries
+set scrolloff=8            " Keep 8 lines above/below cursor
+set sidescrolloff=5        " Keep 5 columns to the left/right of cursor
+
+" macOS specific settings
+set clipboard=unnamed      " Use system clipboard
+set backspace=indent,eol,start " Make backspace work as expected
+set mouse=a                " Enable mouse support
+
+" Performance
+set lazyredraw             " Don't redraw while executing macros
+set ttyfast                " Faster terminal connection
+
+" Split management
+set splitright             " Open vertical splits to the right
+set splitbelow             " Open horizontal splits below
+
+" Backup and swap files
+set nobackup               " Don't create backup files
+set nowritebackup          " Don't create backup while editing
+set noswapfile             " Don't create swap files
+
+" Key mappings
+nnoremap <Space> :nohlsearch<CR>  " Clear search highlighting with Space
+inoremap jk <Esc>          " Quick escape from insert mode
+
+" Window navigation
+nnoremap <C-h> <C-w>h      " Move to left window
+nnoremap <C-j> <C-w>j      " Move to window below
+nnoremap <C-k> <C-w>k      " Move to window above
+nnoremap <C-l> <C-w>l      " Move to right window
+
+" Tab navigation
+nnoremap <C-n> :tabnew<CR> " Create new tab
+nnoremap <C-Left> :tabprevious<CR>  " Previous tab
+nnoremap <C-Right> :tabnext<CR>     " Next tab
+
+" Improved command-line history
+set history=1000           " Remember more commands
+set undolevels=1000        " More undo levels
+
+" Fix for Alt key in macOS terminal
+if has('macunix')
+  let c='a'
+  while c <= 'z'
+    exec "set <A-".c.">=\e".c
+    exec "imap \e".c." <A-".c.">"
+    let c = nr2char(1+char2nr(c))
+  endwhile
+  set ttimeout ttimeoutlen=50
+endif
+
+" Status line configuration
+set statusline=%f          " Path to the file
+set statusline+=%=         " Switch to the right side
+set statusline+=%l,%c      " Line, column
+set statusline+=\ %P       " Percentage through file
